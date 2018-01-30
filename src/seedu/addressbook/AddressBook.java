@@ -107,7 +107,7 @@ public class AddressBook {
 
     private static final String COMMAND_FIND_WORD = "find";
     private static final String COMMAND_FIND_DESC = "Finds all persons whose names contain any of the specified "
-                                        + "keywords (case-sensitive) and displays them as a list with index numbers.";
+                                        + "keywords (not case-sensitive) and displays them as a list with index numbers.";
     private static final String COMMAND_FIND_PARAMETERS = "KEYWORD [MORE_KEYWORDS]";
     private static final String COMMAND_FIND_EXAMPLE = COMMAND_FIND_WORD + " alice bob charlie";
 
@@ -478,6 +478,7 @@ public class AddressBook {
 
     /**
      * Retrieves all persons in the full model whose names contain some of the specified keywords.
+     * Ignores case of the keywords.
      *
      * @param keywords for searching
      * @return list of persons in full model with name containing some of the keywords
@@ -486,7 +487,11 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+
+            ArrayList<String> wordsInNameIgnoreCase = changeStringsToLowerCase(wordsInName);
+            Collection<String> keywordsIgnoreCase = changeStringsToLowerCase(keywords);
+
+            if (!Collections.disjoint(wordsInNameIgnoreCase, keywordsIgnoreCase)) {
                 matchedPersons.add(person);
             }
         }
@@ -1164,4 +1169,19 @@ public class AddressBook {
         return new ArrayList<>(Arrays.asList(toSplit.trim().split("\\s+")));
     }
 
+    /**
+     * Changes all strings in the list to lowercase and returns the list.
+     *
+     * @param strings to get strings to be converted to lowercase
+     * @return list of strings given in lowercase
+     */
+    private static ArrayList<String> changeStringsToLowerCase(Collection<String> strings) {
+        ArrayList<String> stringsLowerCase = new ArrayList<>();
+
+        for(String str : strings) {
+            stringsLowerCase.add(str.toLowerCase());
+        }
+
+        return stringsLowerCase;
+    }
 }
