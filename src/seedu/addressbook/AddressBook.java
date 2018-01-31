@@ -621,7 +621,7 @@ public class AddressBook {
         System.out.print(LINE_PREFIX + "Enter command: ");
         String inputLine = SCANNER.nextLine();
         // silently consume all blank and comment lines
-        while (inputLine.trim().isEmpty() || inputLine.trim().charAt(0) == INPUT_COMMENT_MARKER) {
+        while (isBlankOrCommentLine(inputLine)) {
             inputLine = SCANNER.nextLine();
         }
         return inputLine;
@@ -1178,6 +1178,20 @@ public class AddressBook {
      */
     private static String removePrefix(String fullString, String prefix) {
         return fullString.replace(prefix, "");
+    }
+
+    /**
+     * Ignores lines with first non-whitespace char equal to {@link #INPUT_COMMENT_MARKER} (considered comments)
+     *
+     * @param inputLine input that must be checked for blank or comment lines
+     * @return true if inputLine is a blank or comment line
+     */
+    private static boolean isBlankOrCommentLine(String inputLine) {
+        if(inputLine.trim().isEmpty() || inputLine.trim().charAt(0) == INPUT_COMMENT_MARKER) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
