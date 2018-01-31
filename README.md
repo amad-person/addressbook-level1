@@ -93,6 +93,14 @@ Examples:
    
 * `find Betsy Tim John`
   > Returns Any person having names `Betsy`, `Tim`, or `John`
+  
+#### Sorting all entries: `sort`
+> Sorts and displays all entries in the address book.  
+Format: `sort` 
+
+#### Sorting and saving all entries: `sortsave`
+> Sorts and saves sorted entries in the address book.  
+Format: `sortsave` 
 
 #### Deleting a person: `delete`
 
