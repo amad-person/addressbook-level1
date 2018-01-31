@@ -38,7 +38,7 @@ public class AddressBook {
     /**
      * Version info of the program.
      */
-    private static final String VERSION = "AddessBook Level 1 - Version 1.0";
+    private static final String VERSION = "AddressBook Level 1 - Version 1.0";
 
     /**
      * A decorative prefix added to the beginning of lines printed by AddressBook
@@ -69,6 +69,7 @@ public class AddressBook {
     private static final String MESSAGE_DISPLAY_LIST_ELEMENT_INDEX = "%1$d. ";
     private static final String MESSAGE_GOODBYE = "Exiting Address Book... Good bye!";
     private static final String MESSAGE_ADDRESSBOOK_SORTED = "Displaying Address Book in alphabetical order.";
+    private static final String MESSAGE_ADDRESSBOOK_SORTED_SAVED = "Sorted Address Book in alphabetical order and saved it.";
     private static final String MESSAGE_INVALID_COMMAND_FORMAT = "Invalid command format: %1$s " + LS + "%2$s";
     private static final String MESSAGE_INVALID_FILE = "The given file name [%1$s] is not a valid file name!";
     private static final String MESSAGE_INVALID_PROGRAM_ARGS = "Too many parameters! Correct program argument format:"
@@ -113,6 +114,10 @@ public class AddressBook {
     private static final String COMMAND_SORT_WORD = "sort";
     private static final String COMMAND_SORT_DESC = "Displays all persons as an alphabetically sorted list.";
     private static final String COMMAND_SORT_EXAMPLE = COMMAND_SORT_WORD;
+
+    private static final String COMMAND_SORT_SAVE_WORD = "sortsave";
+    private static final String COMMAND_SORT_SAVE_DESC = "Sorts and saves the Address Book in alphabetical order.";
+    private static final String COMMAND_SORT_SAVE_EXAMPLE = COMMAND_SORT_SAVE_WORD;
 
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
@@ -376,6 +381,8 @@ public class AddressBook {
                 return executeListAllPersonsInAddressBook();
             case COMMAND_SORT_WORD:
                 return executeSortAllPersons();
+            case COMMAND_SORT_SAVE_WORD:
+                return executeSortAndSaveAllPersons();
             case COMMAND_DELETE_WORD:
                 return executeDeletePerson(commandArgs);
             case COMMAND_CLEAR_WORD:
@@ -591,12 +598,29 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeSortAllPersons() {
+        boolean toBeSaved = false;
         ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
-        ArrayList<String[]> toBeDisplayedSorted = sortAllPersonsList(toBeDisplayed);
+        ArrayList<String[]> toBeDisplayedSorted = sortAllPersonsList(toBeDisplayed, toBeSaved);
 
         showToUser(toBeDisplayedSorted);
         return MESSAGE_ADDRESSBOOK_SORTED;
     }
+
+    /**
+     * Sorts all persons in the address book in alphabetical order and saves to file.
+     *
+     * @return feedback display message for the operation result
+     */
+    private static String executeSortAndSaveAllPersons() {
+        boolean toBeSaved = true;
+        ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
+        ArrayList<String[]> toBeDisplayedSorted = sortAllPersonsList(toBeDisplayed, toBeSaved);
+
+        showToUser(toBeDisplayedSorted);
+        return MESSAGE_ADDRESSBOOK_SORTED_SAVED;
+    }
+
+
 
     /**
      * Requests to terminate the program.
@@ -1105,6 +1129,7 @@ public class AddressBook {
                 + getUsageInfoForFindCommand() + LS
                 + getUsageInfoForViewCommand() + LS
                 + getUsageInfoForSortCommand() + LS
+                + getUsageInfoForSortAndSaveCommand() + LS
                 + getUsageInfoForDeleteCommand() + LS
                 + getUsageInfoForClearCommand() + LS
                 + getUsageInfoForExitCommand() + LS
@@ -1148,6 +1173,12 @@ public class AddressBook {
     private static String getUsageInfoForSortCommand() {
         return String.format(MESSAGE_COMMAND_HELP, COMMAND_SORT_WORD, COMMAND_SORT_DESC) + LS
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_SORT_EXAMPLE) + LS;
+    }
+
+    /** Returns the string for showing 'sortsave' command usage instruction */
+    private static String getUsageInfoForSortAndSaveCommand() {
+        return String.format(MESSAGE_COMMAND_HELP, COMMAND_SORT_SAVE_WORD, COMMAND_SORT_SAVE_DESC) + LS
+                + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_SORT_SAVE_EXAMPLE) + LS;
     }
 
     /** Returns string for showing 'help' command usage instruction */
@@ -1224,13 +1255,20 @@ public class AddressBook {
      * Sorts list of persons in alphabetical order and returns it.
      *
      * @param persons unsorted list of persons
+     * @param toBeSaved flag to check if sorted list should be saved or not
      * @return sorted list of persons in alphabetical order
      */
-    private static ArrayList<String[]> sortAllPersonsList(ArrayList<String[]> persons) {
+    private static ArrayList<String[]> sortAllPersonsList(ArrayList<String[]> persons, boolean toBeSaved) {
         ArrayList<String[]> personsSorted = new ArrayList<>(persons);
+        SortComparator sort = new SortComparator();
 
-        Collections.sort(personsSorted, new SortComparator());
-        return personsSorted;
+        if(toBeSaved) {
+            Collections.sort(persons, sort);
+            return persons;
+        } else {
+            Collections.sort(personsSorted, sort);
+            return personsSorted;
+        }
     }
 }
 
